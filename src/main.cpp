@@ -28,25 +28,16 @@ int main(void)
     devices::lcd lcd;
     devices::sensor sensor;
 
-    /* Notify user of calibration test signal. */
-    const char CALIBRATE[] = { "Cal test signal" };
-    char buffer[16];
-    char *ptr = &buffer[0];
-
-    memcpy(buffer, CALIBRATE, sizeof(CALIBRATE));
-    lcd.write(ptr);
-
-    /* Send high (5V = 0xFFFF). */
+    /* Send calibration test signal. */
     i2c.update_data(0xFFFF);
     i2c.tx_data();
     _delay_ms(10000);
 
-    /* Send low (0v = 0x0000). */
     i2c.update_data(0x0000);
     i2c.tx_data();
     _delay_ms(10000);
 
-    /* Setup noise reduction mode. */
+    /* Noise reduction mode. */
     SMCR |= (1 << SE);
     sei();
 

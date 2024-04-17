@@ -14,8 +14,7 @@ namespace devices {
 
             void sample(void)
             {
-                this->flow = ((float)ADC / 1023) * 5;
-                this->flow = SLOPE * this->flow + INTERCEPT; 
+                this->flow = SLOPE * (((float)ADC / 1023) * 5) + INTERCEPT;
             }
     };
 
