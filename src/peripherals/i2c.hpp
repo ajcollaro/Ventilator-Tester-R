@@ -10,8 +10,7 @@ namespace peripherals {
                 struct {
                     uint8_t device;
                     uint8_t command;
-                    uint8_t data_big;
-                    uint8_t data_little;
+                    uint16_t sensor_data;
                 };
                 uint8_t data[4];
             };
@@ -34,8 +33,7 @@ namespace peripherals {
             /* Data to send. */
             void update_data(uint16_t data)
             {
-                this->data_big = data;
-                this->data_little = data << 8;
+                this->sensor_data = data;
             }
 
             void tx_data(void)
@@ -59,7 +57,7 @@ namespace peripherals {
                 TWBR = 0x0C;
 
                 /* Setup data to be transmitted. */
-                this->device = 0x63 << 1;
+                this->device = 0xC2;
                 this->command = 0x40;
             }
     };
