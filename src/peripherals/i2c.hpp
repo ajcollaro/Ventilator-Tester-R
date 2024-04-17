@@ -1,3 +1,5 @@
+#pragma once
+
 #include <avr/io.h>
 
 namespace peripherals {
@@ -8,32 +10,48 @@ namespace peripherals {
                 struct {
                     uint8_t device;
                     uint8_t command;
-                    uint8_t byte2;
-                    uint8_t byte3;
+                    uint8_t data_big;
+                    uint8_t data_little;
                 };
-                uint8_t bytes[3];
+                uint8_t data[4];
             };
 
-            static void tx_stop(void)
-            {
-                TWCR = (1 << TWINT)|(1 << TWEN)|(1 << TWSTO);
-
-                while(TWCR & (1 << TWSTO));
-            }
-
-            static void tx_start(void)
+            void tx_start(void)
             {
                 TWCR = (1 << TWINT)|(1 << TWSTA)|(1 << TWEN);
 
                 while(!(TWCR & (1 << TWINT)));
             }
+
+            void tx_stop(void)
+            {
+                TWCR = (1 << TWINT)|(1 << TWEN)|(1 << TWSTO);
+
+                while(TWCR & (1 << TWSTO));
+            }
         
         public:
-            void update(uint16_t *);
+            /* Data to send. */
+            void update_data(uint16_t data)
+            {
+                this->data_big = data;
+                this->data_little = data << 8;
+            }
 
-            void tx_data(void);
-            void tx_stop(void);
-            void tx_start(void);
+            void tx_data(void)
+            {
+                this->tx_start();
+
+                for(uint8_t i = 0; i < sizeof(this->data); i++)
+                {
+                    TWDR = this->data[i];
+                    TWCR = (1 << TWINT)|(1 << TWEN);
+
+                    while(!(TWCR & (1 << TWINT)));
+                };
+
+                this->tx_stop();
+            }
             
             i2c(void)
             {
