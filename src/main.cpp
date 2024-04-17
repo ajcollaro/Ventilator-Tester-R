@@ -3,7 +3,6 @@
 #include "display.hpp"
 #include "peripherals/i2c.hpp"
 #include "peripherals/misc.hpp"
-#include "devices/dac.hpp"
 #include "devices/lcd.hpp"
 #include "devices/sensor.hpp"
 #include <string.h>
@@ -24,7 +23,6 @@ int main(void)
     peripherals::i2c i2c;
 
     /* Setup devices.. */
-    devices::dac dac;
     devices::lcd lcd;
     devices::sensor sensor;
 
@@ -36,6 +34,9 @@ int main(void)
     i2c.update_data(0x0000);
     i2c.tx_data();
     _delay_ms(10000);
+
+    /* Offset to avoid EPAP underflow on DAC. */
+    const uint8_t OFFSET = 20;
 
     /* Noise reduction mode. */
     SMCR |= (1 << SE);
@@ -52,15 +53,12 @@ int main(void)
         sensor.sample();
         
         /* Update DAC. */
-        dac.set_voltage(&sensor.flow);
+        i2c.update_data(sensor.flow + OFFSET);
+        i2c.tx_data();
 
         /* Update LCD before overflow. */
         if (cycle == 255) 
-        {
             display::report_data(&lcd, &sensor);
-            i2c.update_data(dac.bytes);
-            i2c.tx_data();
-        }
 
         /* Sleep and begin conversion. */
         asm("sleep \n\t");
