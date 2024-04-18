@@ -30,9 +30,9 @@ namespace peripherals {
             }
         
         public:
-            void update_data(uint16_t data)
+            void update_data(float data)
             {
-                this->sensor_data = data;
+                this->sensor_data = (uint16_t)data;
             }
 
             void tx_data(void)
@@ -56,7 +56,7 @@ namespace peripherals {
                 TWBR = 0x0C;
 
                 /* Setup data to be transmitted. */
-                this->device = 0xC2;
+                this->device = 0x63<<1;
                 this->command = 0x40;
             }
     };

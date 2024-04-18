@@ -26,6 +26,14 @@ int main(void)
     devices::lcd lcd;
     devices::sensor sensor;
 
+    /* Notify user of cal test signal. */
+    constexpr char CAL_NOTIFY[] = { "Cal test signal" };
+    char buffer[16];
+    char *ptr = &buffer[0];
+
+    memcpy(buffer, CAL_NOTIFY, sizeof(CAL_NOTIFY));
+    lcd.write(ptr);
+
     /* Send calibration test signal. */
     i2c.update_data(0xFFFF);
     i2c.tx_data();
@@ -36,7 +44,7 @@ int main(void)
     _delay_ms(10000);
 
     /* Offset to avoid EPAP underflow on DAC. */
-    const uint8_t OFFSET = 20;
+    const uint16_t OFFSET = 20;
 
     /* Noise reduction mode. */
     SMCR |= (1 << SE);

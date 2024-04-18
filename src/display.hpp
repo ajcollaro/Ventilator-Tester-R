@@ -10,7 +10,7 @@ namespace display {
 
     void report_data(devices::lcd *lcd, devices::sensor *sensor)
     {
-        const char UNITS[] = { " L/min (STP)" };
+        constexpr char UNITS[] = { " L/min (STP)" };
 
         /* One line of text. */
         char buffer[16];
