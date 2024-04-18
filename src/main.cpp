@@ -12,6 +12,14 @@ ISR(ADC_vect)
     // Interrupt, return to main loop.
 }
 
+/* Calibration runner. */
+template<class T> void calibrate(T send, peripherals::i2c *i2c)
+{
+    i2c->update_data(send);
+    i2c->tx_data();
+    _delay_ms(10000);
+}
+
 int main(void)
 {
     /* Thermal management. */
@@ -34,14 +42,9 @@ int main(void)
     memcpy(buffer, CAL_NOTIFY, sizeof(CAL_NOTIFY));
     lcd.write(ptr);
 
-    /* Send calibration test signal. */
-    i2c.update_data(0xFFFF);
-    i2c.tx_data();
-    _delay_ms(10000);
-
-    i2c.update_data(0x0000);
-    i2c.tx_data();
-    _delay_ms(10000);
+    /* Send calibration test signals. */
+    calibrate(0xFFFF, &i2c);
+    calibrate(0x0000, &i2c);
 
     /* Offset to avoid EPAP underflow on DAC. */
     const uint16_t OFFSET = 20;

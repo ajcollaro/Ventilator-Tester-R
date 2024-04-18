@@ -56,7 +56,7 @@ namespace peripherals {
                 TWBR = 0x0C;
 
                 /* Setup data to be transmitted. */
-                this->device = 0x63<<1;
+                this->device = 0xC2;
                 this->command = 0x40;
             }
     };
